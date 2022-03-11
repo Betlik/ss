@@ -1,22 +1,22 @@
 #include "spse_stm8.h"  
 
 
-// blok funkcí pro STM s instancí ADC2
+// blok funkcï¿½ pro STM s instancï¿½ ADC2
 #ifdef STM8S208
 
-/* funkce provede pøevod a vrátí výsledek pøevodu ze zvoleného kanálu.
-Argument mùže být buï makro: ADC2_CHANNEL_x ... kde x mùže být 0 až 15 nebo èíselná hodnota 0 až 15 (odpovídá èíslu kanálu)
+/* funkce provede pï¿½evod a vrï¿½tï¿½ vï¿½sledek pï¿½evodu ze zvolenï¿½ho kanï¿½lu.
+Argument mï¿½ï¿½e bï¿½t buï¿½ makro: ADC2_CHANNEL_x ... kde x mï¿½ï¿½e bï¿½t 0 aï¿½ 15 nebo ï¿½ï¿½selnï¿½ hodnota 0 aï¿½ 15 (odpovï¿½dï¿½ ï¿½ï¿½slu kanï¿½lu)
 */
 uint16_t ADC_get(ADC2_Channel_TypeDef ADC2_Channel){
-ADC2_Select_Channel(ADC2_Channel); // vybere kanál / nastavuje analogový multiplexer
+ADC2_Select_Channel(ADC2_Channel); // vybere kanï¿½l / nastavuje analogovï¿½ multiplexer
 ADC2->CR1 |= ADC2_CR1_ADON; // Start Conversion (ADON must be SET before => ADC must be enabled !)
-while(!(ADC2->CSR & ADC2_CSR_EOC)); // èeká na dokonèení pøevodu (End Of Conversion)
-ADC2->CSR &=~ADC2_CSR_EOC; // maže vlajku 
-return ADC2_GetConversionValue(); // vrací výsledek
+while(!(ADC2->CSR & ADC2_CSR_EOC)); // ï¿½ekï¿½ na dokonï¿½enï¿½ pï¿½evodu (End Of Conversion)
+ADC2->CSR &=~ADC2_CSR_EOC; // maï¿½e vlajku 
+return ADC2_GetConversionValue(); // vracï¿½ vï¿½sledek
 }
 
-/* Funkce šetrnì pøepne multiplexer (náhrada za mizerné øešení ze SPL knihoven)
-Argument mùže být buï makro: ADC2_CHANNEL_x ... kde x mùže být 0 až 15 nebo èíselná hodnota 0 až 15 (odpovídá èíslu kanálu)
+/* Funkce ï¿½etrnï¿½ pï¿½epne multiplexer (nï¿½hrada za mizernï¿½ ï¿½eï¿½enï¿½ ze SPL knihoven)
+Argument mï¿½ï¿½e bï¿½t buï¿½ makro: ADC2_CHANNEL_x ... kde x mï¿½ï¿½e bï¿½t 0 aï¿½ 15 nebo ï¿½ï¿½selnï¿½ hodnota 0 aï¿½ 15 (odpovï¿½dï¿½ ï¿½ï¿½slu kanï¿½lu)
 */
 void ADC2_Select_Channel(ADC2_Channel_TypeDef ADC2_Channel){
     uint8_t tmp = (ADC2->CSR) & (~ADC2_CSR_CH);
@@ -24,8 +24,8 @@ void ADC2_Select_Channel(ADC2_Channel_TypeDef ADC2_Channel){
     ADC2->CSR = tmp;
 }
 
-/* Nastaví zarovnání výsledku pøevodu vlevo nebo vpravo
-Argument mùže být makro ADC2_ALIGN_LEFT nebo ADC2_ALIGN_RIGHT
+/* Nastavï¿½ zarovnï¿½nï¿½ vï¿½sledku pï¿½evodu vlevo nebo vpravo
+Argument mï¿½ï¿½e bï¿½t makro ADC2_ALIGN_LEFT nebo ADC2_ALIGN_RIGHT
 */
 void ADC2_AlignConfig(ADC2_Align_TypeDef ADC2_Align){
 	if(ADC2_Align){
@@ -35,7 +35,7 @@ void ADC2_AlignConfig(ADC2_Align_TypeDef ADC2_Align){
 	}
 }
 
-/* Funkce poèká definovaný èas na stabilizaci ADC (vhodné zaøadit po spuštìní ADC k zajištìní že se první pøevod neprovede pøed stabilizací)
+/* Funkce poï¿½kï¿½ definovanï¿½ ï¿½as na stabilizaci ADC (vhodnï¿½ zaï¿½adit po spuï¿½tï¿½nï¿½ ADC k zajiï¿½tï¿½nï¿½ ï¿½e se prvnï¿½ pï¿½evod neprovede pï¿½ed stabilizacï¿½)
 */
 void ADC2_Startup_Wait(void){
 	_delay_us(ADC_TSTAB);
@@ -44,7 +44,8 @@ void ADC2_Startup_Wait(void){
 #endif
 
 
-// blok funkcí pro STM s instancí ADC1
+// blok funkcï¿½ pro STM s instancï¿½ ADC1
+
 #ifdef STM8S103
 
 uint16_t ADC_get(ADC1_Channel_TypeDef ADC1_Channel){
@@ -53,6 +54,7 @@ ADC1->CR1 |= ADC1_CR1_ADON; // Start Conversion (ADON must be SET before => ADC 
 while(!(ADC1->CSR & ADC1_CSR_EOC));
 ADC1->CSR &=~ADC1_CSR_EOC;
 return ADC1_GetConversionValue();
+
 }
 
 void ADC1_Select_Channel(ADC1_Channel_TypeDef ADC1_Channel){
