@@ -29,13 +29,18 @@ F_CPU=16000000
 
 
 MKDIR = mkdir
+### OpenOCD v0.10 syntax
+#OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
+### OpenOCD v0.11 syntax
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
+CP = cp
+
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
 	PYTHON = python
 else
     uname_S := $(shell uname -s)
@@ -43,10 +48,8 @@ else
 	CC_ROOT = /usr
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 	PYTHON = python3
 endif
-CP = cp
 
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 1
@@ -71,6 +74,7 @@ PRJ_INC_DIR = $(PRJ_ROOT)/inc
 # all project sources included by default
 PRJ_SOURCE  = $(notdir $(wildcard $(PRJ_SRC_DIR)/*.c))
 PRJ_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.rel))
+PRJ_INCS  = $(wildcard $(PRJ_INC_DIR)/*.h)
 PRJ_ASSMS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.asm))
 PRJ_ASSRM := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.asmrm))
 
@@ -112,7 +116,7 @@ $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 	@echo 
 
 
-$(OUTPUT_DIR)/%.asm: %.c Makefile | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.asm: %.c Makefile $(PRJ_INCS) | $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
 
 $(OUTPUT_DIR):
@@ -144,11 +148,11 @@ debug: $(TARGET).elf
 
 
 switch-sdcc::
-	$(LN) .make/Makefile-sdcc     Makefile
+	$(LN) .make/Makefile-sdcc Makefile || $(CP) .make/Makefile-sdcc Makefile
 switch-sdcc-gas::
-	$(LN) .make/Makefile-sdcc-gas Makefile
-switch-sdccrm:
-	$(LN) .make/Makefile-sdccrm Makefile
+	$(LN) .make/Makefile-sdcc-gas Makefile || $(CP) .make/Makefile-sdcc-gas Makefile
 
+spl::
+	bash .make/spl.sh
 
 .PHONY: clean
